@@ -59,21 +59,7 @@ const Login = () => {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-            {password && (
-  <p className={
-    password.length < 6
-    ? "text-red-500 text-sm"
-    : /[A-Z]/.test(password) && /[0-9]/.test(password)
-    ? "text-green-500 text-sm"
-    : "text-yellow-600 text-sm"
-  }>
-    {password.length < 6
-      ? "Weak"
-      : /[A-Z]/.test(password) && /[0-9]/.test(password)
-      ? "Strong"
-      : "Medium"}
-  </p>
-)}
+      
     </div>
 
     <div className="flex justify-end -mt-2">
