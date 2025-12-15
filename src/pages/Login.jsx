@@ -1,31 +1,30 @@
 import axios from "axios";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import api from "../api/api";
+import { TokenContext } from "../utils/TokenContext";
 
 const Login = () => {
-
+    const {token, setToken} = useContext(TokenContext);
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const user = useSelector((state) => state.user)
     const dispatch = useDispatch();
-   
+    const navigate = useNavigate();
     const handleLogin = async (e) => {
         e.preventDefault();
-        dispatch({type: 'LOGIN_REQUEST',payload : {
-            username,
-            password
-        }});
-        await axios.post("http://localhost:8081/api/auth/login", {
+        await api.post("/auth/login", {
            email : username,
             password
         }).then((response) => {
-            dispatch({type: 'LOGIN_SUCCESS', payload: response.data.user});
             console.log("Login successful:", response.data);
-            cookieStore.set("token", response.data.token);
+            navigate("/home");
+            localStorage.setItem("token", response.data.token);
+            setToken(response.data.token);
         }).catch((error) => {
-            console.log(error.response.data.details);
-            dispatch({type: 'LOGIN_FAILURE', payload: error.message});
+            console.log(error.response.data.message);
+            alert("Login failed: " + error.response.data.message);
         });
     }
 
@@ -46,6 +45,7 @@ const Login = () => {
         placeholder="Enter username"
         value={username}
         onChange={(e) => setUsername(e.target.value)}
+        required = {true}
       />
     </div>
 
@@ -58,6 +58,7 @@ const Login = () => {
         placeholder="Enter password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
+        required = {true}
       />
       
     </div>
