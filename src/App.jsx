@@ -9,6 +9,8 @@ import api from './api/api'
 import Navbar from './components/Navbar'
 import { TokenProvider } from './utils/TokenContext'
 import Expenses from './pages/Expenses'
+import ForgotPasswordPage from './pages/ForgotPasswordPage'
+import ResetPasswordPage from './pages/ResetPasswordPage'
 
 function App() {
 
@@ -25,7 +27,8 @@ function App() {
       <BrowserRouter>
       <Navbar />
       <Routes>
-
+    <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+   { <Route path="/reset-password" element={<ResetPasswordPage />} /> }
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Register />} />
       <Route path="/" element={<LandingPage />} />

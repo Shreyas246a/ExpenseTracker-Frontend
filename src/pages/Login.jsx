@@ -65,7 +65,7 @@ const Login = () => {
 
     <div className="flex justify-end -mt-2">
       <span className="text-sm text-lime-700 cursor-pointer hover:underline">
-        Forgot password?
+       <Link to="/forgot-password">Forgot password?</Link>
       </span>
     </div>
 

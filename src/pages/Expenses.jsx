@@ -5,6 +5,7 @@ import ExpenseModal from "../components/ExpenseModal";
 const Expenses = () =>{
 const [expenses, setExpenses] = useState([{}]);
 const [modalOpen, setModalOpen] = useState(false);
+const [editingExpense, setEditingExpense] = useState(null);
 
 // Fetch expenses on component mount
 useEffect(()=>{
@@ -65,6 +66,14 @@ const handleAddExpense = async () => {
   }
 };
 
+const openEditModal = (expense) => {
+  setEditingExpense(expense);
+  setTitle(expense.title);
+  setAmount(expense.amount);
+  setDate(expense.date);
+  setCategory(expense.category?.name || expense.category);
+  setModalOpen(true);
+};
 
 // Fetch categories for the dropdown
 useEffect(() => {
@@ -86,9 +95,58 @@ useEffect(() => {
 }, []);
 
 
+const handleUpdateExpense = async () => {
+  try {
+    const res = await api.put(
+      `/expenses/update/${editingExpense.id}`,
+      {
+        title,
+        amount,
+        date,
+        category,
+      },
+      {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token"),
+        },
+      }
+    );
+
+    setExpenses((prev) =>
+      prev.map((e) =>
+        e.id === editingExpense.id ? res.data.data : e
+      )
+    );
+
+    // Reset state
+    setEditingExpense(null);
+    setModalOpen(false);
+    setTitle("");
+    setAmount("");
+    setDate("");
+    setCategory("");
+
+  } catch (error) {
+    console.error("Failed to update expense", error);
+  }
+};
 
 
+const handleDelete = async (id) => {
+  const confirmDelete = window.confirm("Are you sure you want to delete this expense?");
+  if (!confirmDelete) return;
 
+  try {
+    await api.delete(`/expenses/delete/${id}`, {
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("token"),
+      },
+    });
+    setExpenses((prev) => prev.filter((e) => e.id !== id));
+  } catch (error) {
+    console.error("Failed to delete expense", error);
+  }
+};
 
 
 
@@ -100,19 +158,22 @@ return(
             <h1 className="text-3xl font-bold">Your Expenses</h1>
             <button className="bg-blue-500 text-white px-4 py-2 rounded" onClick={() => setModalOpen(true)}>Add Expense + </button>
         </div>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 grid-flow-row">
         {expenses.map((expense)=>{
-            return(<div key={expense.id} className="border p-4 m-4 rounded shadow">
+            return(<div key={expense.id} className="grid border p-4 m-4 rounded shadow " > 
                 <h2 className="text-xl font-bold">{expense.title}</h2>
                 <p className="text-gray-600">Amount: Rs {expense.amount}</p>
                 <p className="text-gray-600">Date: {new Date(expense.date).toLocaleDateString()}</p>
                 <p className="text-gray-600">Category: {expense.category}</p>
-            </div>
-            )
-        })}
-
-
-
-
+                <div className="flex gap-4 pt-3">
+                <button
+              onClick={() => handleDelete(expense.id)} className="text-red-600 py-2 px-2 rounded bg-red-100 hover:underline">Delete</button>
+    <button onClick={() => openEditModal(expense)} className="text-green-600 py-2 px-4 rounded bg-green-100 hover:underline">Edit</button>
+</div>   
+</div>
+)  
+})} 
+</div>
 
 
 
@@ -169,12 +230,12 @@ return(
           Cancel
         </button>
 
-        <button
-          onClick={handleAddExpense}
-          className="bg-lime-700 text-white px-4 py-2 rounded"
-        >
-          Save
-        </button>
+  <button
+  onClick={editingExpense ? handleUpdateExpense : handleAddExpense}
+  className="bg-lime-700 text-white px-4 py-2 rounded"
+>
+  {editingExpense ? "Update" : "Save"}
+</button>
       </div>
     </div>
   </div>
