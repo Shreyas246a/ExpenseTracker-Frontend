@@ -3,19 +3,57 @@ import api from "../api/api";
 import ExpenseModal from "../components/ExpenseModal";
 
 const Expenses = () =>{
-const [expenses, setExpenses] = useState([{}]);
-const [modalOpen, setModalOpen] = useState(false);
-const [editingExpense, setEditingExpense] = useState(null);
+  
+  const [title, setTitle] = useState("");
+  const [amount, setAmount] = useState(0);
+  const [minAmount, setMinAmount] = useState("");
+  const [date, setDate] = useState("");
+  const [categories, setCategories] = useState([]);
+  const [category, setCategory] = useState("");
+  const [maxAmount,setMaxAmount] = useState("");
+  const [startDate,setStartDate] = useState("");
+  const [endDate,setEndDate] = useState("");
+  const [sortBy, setSortBy] = useState("date");
+  const [order, setOrder] = useState("desc");
+  const [expenses, setExpenses] = useState([{}]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingExpense, setEditingExpense] = useState(null);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [size] = useState(10);
+  const [categoryFilter,setCategoryFilter] = useState();
+
+const [filters, setFilters] = useState({
+  categoryFilter: null,
+  startDate: "",
+  endDate: "",
+  minAmount: "",
+  maxAmount: "",
+});
+const [appliedFilters, setAppliedFilters] = useState(filters);
+
+
 
 // Fetch expenses on component mount
 useEffect(()=>{
-  
-         api.get("/expenses/expenses", {
-            headers:{Authorization: "Bearer " + localStorage.getItem("token")}
+        api.get("/expenses/expenses", {
+          params:{
+        page,
+        size,
+        categoryId: categoryFilter,
+        startDate,
+        minAmount,
+        maxAmount,
+        endDate,
+        sortBy,
+        order,
+          }
+,
+        headers:{Authorization: "Bearer " + localStorage.getItem("token")}
         }).then((response) =>{
-            console.log(response.data.data.content)
+            console.log(response.data)
             setExpenses(response.data.data.content);
-            console.log(expenses);
+            setTotalPages(response.data.data.totalPages);
         }).catch((error) =>{
             console.log("Error fetching expenses:", error);
             if(error.response.status === 403){
@@ -24,14 +62,7 @@ useEffect(()=>{
             }
         })
 
-},[]);
-
-
-const [title, setTitle] = useState("");
-const [amount, setAmount] = useState("");
-const [date, setDate] = useState("");
-const [categories, setCategories] = useState([]);
-const [category, setCategory] = useState("");
+},[page, appliedFilters, sortBy, order]);
 
 // Function to handle adding a new expense
 const handleAddExpense = async () => {
@@ -149,15 +180,123 @@ const handleDelete = async (id) => {
 };
 
 
-
 return(
 
     // Expense List UI
     <div className="p-6">
         <div className="flex justify-between items-center mb-6">
             <h1 className="text-3xl font-bold">Your Expenses</h1>
+            <div className="flex gap-3 mb-4 flex-wrap">
+
+ <select
+        className="border rounded px-3 py-2"
+        value={categoryFilter}
+        onChange={(e) =>{
+          console.log(typeof e.target.value)
+          setCategoryFilter(
+    e.target.value ? Number(e.target.value) : null
+  )
+   console.log(typeof categoryFilter)
+}
+}
+      >
+        <option value="">All Categories</option>
+        {categories.map(c => (
+          <option key={c.id} value={c.id}>{c.name}</option>
+        ))}
+      </select>
+
+      {/* Dates */}
+      <input
+        type="date"
+        className="border rounded px-3 py-2"
+        value={startDate}
+        onChange={(e) => {
+          setStartDate(e.target.value);
+          setPage(0);
+        }}
+      />
+
+      <input
+        type="date"
+        className="border rounded px-3 py-2"
+        value={endDate}
+        onChange={(e) => {
+          setEndDate(e.target.value);
+          setPage(0);
+        }}
+      />
+
+      {/* Amount */}
+      <input
+        type="number"
+        placeholder="Min"
+        className="border rounded px-3 py-2 w-24"
+        value={minAmount}
+        onChange={(e) => {
+          setMinAmount(e.target.value);
+          setPage(0);
+        }}
+      />
+
+      <input
+        type="number"
+        placeholder="Max"
+        className="border rounded px-3 py-2 w-24"
+        value={maxAmount}
+        onChange={(e) => {
+          setMaxAmount(e.target.value);
+          setPage(0);
+        }}
+      />
+
+      {/* Sorting */}
+      <select
+        className="border rounded px-3 py-2"
+        value={sortBy}
+        onChange={(e) => setSortBy(e.target.value)}
+      >
+        <option value="date">Date</option>
+        <option value="amount">Amount</option>
+      </select>
+
+      <select
+        className="border rounded px-3 py-2"
+        value={order}
+        onChange={(e) => setOrder(e.target.value)}
+      >
+        <option value="desc">Desc</option>
+        <option value="asc">Asc</option>
+      </select>
+<button onClick={() => {
+  setFilters({categoryFilter:categoryFilter,minAmount:minAmount,maxAmount:maxAmount,startDate:startDate,endDate:endDate})
+  setAppliedFilters(filters);
+  setPage(0);
+}}>
+  Apply
+</button>
+      {/* Clear Filters Button */}
+      <button
+        className="ml-auto bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"
+        onClick={() => {
+          setCategoryFilter("");
+          setStartDate("");
+          setEndDate("");
+          setMinAmount("");
+          setMaxAmount("");
+          setSortBy("date");
+          setOrder("desc");
+          setPage(0);
+        }}
+      >
+        Clear
+      </button>
+
+
+</div>
             <button className="bg-blue-500 text-white px-4 py-2 rounded" onClick={() => setModalOpen(true)}>Add Expense + </button>
         </div>
+
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 grid-flow-row">
         {expenses.map((expense)=>{
             return(<div key={expense.id} className="grid border p-4 m-4 rounded shadow " > 
@@ -240,7 +379,32 @@ return(
     </div>
   </div>
 )}
+<div className="flex justify-center items-center gap-3 mt-6">
 
+  <button
+    disabled={page === 0}
+    onClick={() => setPage(page - 1)}
+    className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+  >
+    Prev
+  </button>
+
+  <span>
+    Page {page + 1} of {totalPages}
+  </span>
+  
+  
+{ (page < totalPages - 1)  &&
+
+  <button
+    disabled={page === totalPages - 1}
+    onClick={() => setPage(page + 1)}
+    className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+  >
+    Next
+  </button>
+}
+</div>
     </div>
 )
 
