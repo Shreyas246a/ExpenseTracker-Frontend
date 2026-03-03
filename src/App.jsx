@@ -11,6 +11,7 @@ import { TokenProvider } from './utils/TokenContext'
 import Expenses from './pages/Expenses'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
+import Dashboard from './pages/Dashboard'
 
 function App() {
 
@@ -33,7 +34,7 @@ function App() {
       <Route path="/signup" element={<Register />} />
       <Route path="/" element={<LandingPage />} />
       {/* Protected Route for Home */}
-      <Route path="/home" element={<ProtectedRoutes><h1 className='text-3xl text-center'>Welcome to the Dashboard</h1></ProtectedRoutes>} />
+      <Route path="/home" element={<ProtectedRoutes><Dashboard /></ProtectedRoutes>} />
       <Route path="/expenses" element = {<ProtectedRoutes><Expenses></Expenses></ProtectedRoutes>}> </Route>
       </Routes>
       </BrowserRouter>

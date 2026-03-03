@@ -268,7 +268,7 @@ return(
         <option value="desc">Desc</option>
         <option value="asc">Asc</option>
       </select>
-<button onClick={() => {
+<button className="bg-green-700 rounded-md px-4 py-2 text-white hover:bg-green-800" onClick={() => {
   setFilters({categoryFilter:categoryFilter,minAmount:minAmount,maxAmount:maxAmount,startDate:startDate,endDate:endDate})
   setAppliedFilters(filters);
   setPage(0);
