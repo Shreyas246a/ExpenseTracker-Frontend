@@ -10,7 +10,7 @@ const Navbar = () => {
         <nav className="flex gap-20 bg-lime-800 p-8 text-lime-100 shadow-md justify-center">
     
         <div className="flex-2/12 font-bold text-2xl">
-            Logo
+            Expense Tracker
         </div>
         
         {!token ?(
