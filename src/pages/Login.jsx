@@ -1,6 +1,4 @@
-import axios from "axios";
 import { useContext, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../api/api";
 import { TokenContext } from "../utils/TokenContext";
@@ -9,8 +7,6 @@ const Login = () => {
     const {token, setToken} = useContext(TokenContext);
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    const user = useSelector((state) => state.user)
-    const dispatch = useDispatch();
     const navigate = useNavigate();
     const handleLogin = async (e) => {
         e.preventDefault();

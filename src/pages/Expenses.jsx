@@ -115,8 +115,8 @@ useEffect(() => {
           Authorization: "Bearer " + localStorage.getItem("token"),
         },
       });
-      console.log(res.data);
-      setCategories(res.data); // adjust if response shape differs
+      console.log(res);
+      setCategories(res.data); 
     } catch (err) {
       console.error("Failed to load categories", err);
     }
@@ -363,7 +363,10 @@ return(
 
       <div className="flex justify-end gap-3">
         <button
-          onClick={() => setModalOpen(false)}
+          onClick={() =>{
+            setModalOpen(false);
+            setEditingExpense(null);
+          }}
           className="border px-4 py-2 rounded"
         >
           Cancel

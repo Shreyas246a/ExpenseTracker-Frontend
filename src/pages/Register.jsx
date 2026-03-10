@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+
 import { Link, useNavigate } from "react-router-dom";
 
 const Register = () => {
@@ -10,26 +10,19 @@ const Register = () => {
     const [email, setEmail] = useState("");
     const [errors, setErrors] = useState({});
     const [showPassword, setShowPassword] = useState(false);
-    const dispatch = useDispatch();
    const navigate = useNavigate();
     const handleRegister = async (e) => {
         e.preventDefault();
         if (!validate()) return;
-        dispatch({type: 'REGISTER_REQUEST',payload : {
-            username,
-            password
-        }});
         await axios.post("http://localhost:8081/api/auth/register", {
             name: username,
             email : email,
             password
         }).then((response) => {
-            dispatch({type: 'REGISTER_SUCCESS', payload: response?.data?.user});
             console.log("Registration successful:", response.data);
             navigate("/login");
         }).catch((error) => {
             console.log(error.response?.data?.details);
-            dispatch({type: 'REGISTER_FAILURE', payload: error.message});
         });
     }
 

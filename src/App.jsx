@@ -1,11 +1,9 @@
-import { useEffect, useState } from 'react'
+
 import './App.css'
 import Login from './pages/Login'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Register from './pages/Register'
-import { useSelector } from 'react-redux'
 import LandingPage from './pages/LandingPage'
-import api from './api/api'
 import Navbar from './components/Navbar'
 import { TokenProvider } from './utils/TokenContext'
 import Expenses from './pages/Expenses'
