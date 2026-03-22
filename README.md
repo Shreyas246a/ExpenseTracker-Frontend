@@ -44,3 +44,8 @@ npm start
 Frontend runs on
 
 http://localhost:5127
+
+
+## Run with Docker
+docker build -t <name> .   {with .env}
+docker run -p 3000:3000 <iamge-name>
